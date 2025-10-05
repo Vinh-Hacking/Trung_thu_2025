@@ -1,5 +1,17 @@
 let lanterns = [];
-let lanternCount = 20;
+let lanternCount = 10;
+
+function isMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+}
+
+if (isMobile()) {
+  lanternCount = 10;
+} else {
+  lanternCount = 20;
+}
 let messages = [];
 let lanternImgs = [];
 
