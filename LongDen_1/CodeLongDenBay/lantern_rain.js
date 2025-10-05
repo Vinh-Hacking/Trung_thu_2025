@@ -8,13 +8,13 @@ function detectMobile() {
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       userAgent
     );
-  const isSmallScreen = window.innerWidth < 222;
+  const isSmallScreen = window.innerWidth < 2000;
   console.log("UserAgent:", userAgent);
   console.log("isMobileUA:", isMobileUA);
   console.log("window.innerWidth:", window.innerWidth);
   console.log("isSmallScreen:", isSmallScreen);
   console.log("isMobileDevice:", isMobileUA && isSmallScreen);
-  return isMobileUA && isSmallScreen;
+  return isMobileUA || isSmallScreen;
 }
 
 let messages = [];
@@ -114,14 +114,18 @@ class Lantern {
     push();
     translate(this.x, this.y);
 
-    // Glow effect for both desktop and mobile
+    // Glow effect using ellipse for both desktop and mobile
     let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
-    let glowSize = 60 + flicker * 40; // Same glow size as desktop
+    let glowColorIntense = color(255, 230, 0, 150 + flicker * 100); // Alpha for glow
 
-    // Set glow color to match CSS orange (255, 165, 0)
-    let glowColorIntense = color(255, 230, 0, 255);
-    drawingContext.shadowColor = glowColorIntense;
-    drawingContext.shadowBlur = glowSize; // Use glowSize for flickering effect
+    // Draw glow ellipse
+    drawingContext.globalCompositeOperation = "screen";
+    fill(glowColorIntense);
+    noStroke();
+    ellipse(0, 0, this.size * 2.5, this.size * 3.5);
+
+    // Reset blend mode
+    drawingContext.globalCompositeOperation = "source-over";
 
     // Draw the lantern image
     if (!isMobileDevice) {
@@ -135,8 +139,7 @@ class Lantern {
       this.size * 1.5
     );
 
-    // Reset shadow and tint for other elements
-    drawingContext.shadowBlur = 0;
+    // Reset tint for other elements
     noTint();
 
     pop();
