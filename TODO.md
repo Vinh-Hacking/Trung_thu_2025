@@ -3,7 +3,10 @@
 - [x] Update Lantern display method to draw the image instead of ellipse
 - [x] Adjust size and positioning for image display
 - [x] Remove rotation animation
-- [x] Add depth effect: lanterns higher up are smaller and dimmer
+- [x] Add depth effect: lanterns far away (smaller size) are dimmer
 - [x] Add slow flickering glow effect (dim to bright)
 - [x] Increase lantern count for denser effect
-- [x] Random speeds for lanterns
+- [x] Random speeds for lanterns (slower)
+- [x] Improve light effect: reduced glow range and alpha, removed bright center, ellipse fits image, light fades gradually from center, faster flicker (0.05), use SCREEN blend mode for realistic light accumulation without over-brightening
+- [x] Sort lanterns by size for layering (small behind large)
+- [x] Reduce far lanterns: mostly close lanterns with clear display

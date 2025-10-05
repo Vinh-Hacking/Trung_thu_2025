@@ -45,6 +45,7 @@ function windowResized() {
 
 function draw() {
   clear();
+  lanterns.sort((a, b) => a.size - b.size); // Draw small lanterns first, large ones on top
   for (let lantern of lanterns) {
     lantern.update();
     lantern.display();
@@ -55,9 +56,9 @@ class Lantern {
   constructor() {
     this.x = random(width);
     this.y = random(height, height + 200);
-    this.size = random(30, 60);
-    this.speed = random(0.5, 1.5);
-    this.color = color(255, 150, 50, 150);
+    this.size = random(40, 60); // Mostly close lanterns
+    this.alpha = map(this.size, 40, 60, 80, 150);
+    this.speed = random(0.2, 0.8);
     this.xOffset = random(1000);
     this.img = random(lanternImgs);
   }
@@ -74,24 +75,26 @@ class Lantern {
   display() {
     push();
     translate(this.x, this.y);
-    // Depth effect: lanterns higher up are smaller and dimmer
-    let depthScale = map(this.y, 0, height, 0.3, 1);
-    scale(depthScale);
-    let alpha = map(depthScale, 0.3, 1, 50, 150);
-    this.color = color(255, 150, 50, alpha);
-    // Flickering glow effect (slow dim to bright)
-    let flicker = sin(frameCount * 0.02 + this.xOffset) * 0.5 + 0.5; // 0 to 1
-    let glow = 5 + flicker * 10;
-    for (let r = glow; r > 0; r -= 2) {
+    this.color = color(255, 200, 100, this.alpha); // More yellow light
+    // Use SCREEN blend mode for realistic light accumulation without over-brightening
+    blendMode(SCREEN);
+    // Flickering glow effect (faster flicker, fading from center)
+    let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
+    let glow = 10 + flicker * 20; // Reduced range
+    for (let r = glow; r > 0; r -= 1) {
+      // Smaller steps for smoother
       fill(
         red(this.color),
         green(this.color),
         blue(this.color),
-        map(r, 0, glow, 0, alpha * 0.5)
+        map(r, 0, glow, this.alpha * 0.3, 0) // Fade from center, reduced alpha
       );
-      ellipse(0, 0, this.size + r, this.size + r * 1.5);
+      ellipse(0, 0, this.size + r, (this.size + r) * 1.2);
     }
-    // Lantern image
+    // Reset blend mode
+    blendMode(BLEND);
+    // Lantern image with alpha for dimming far lanterns
+    tint(255, this.alpha);
     image(
       this.img,
       -this.size / 2,
@@ -99,6 +102,7 @@ class Lantern {
       this.size,
       this.size * 1.5
     );
+    tint(255, 255); // Reset tint
     pop();
   }
 }
