@@ -1,22 +1,17 @@
 let lanterns = [];
 let lanternCount = 10;
+let isMobileDevice = false;
 
-function isMobile() {
-  // More robust mobile detection including screen width check
+function detectMobile() {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
   const isMobileUA =
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       userAgent
     );
-  const isSmallScreen = window.innerWidth <= 768; // typical max width for mobile devices
+  const isSmallScreen = window.innerWidth <= 768;
   return isMobileUA && isSmallScreen;
 }
 
-if (isMobile()) {
-  lanternCount = 1;
-} else {
-  lanternCount = 5; // reduce number of lanterns on desktop for better performance
-}
 let messages = [];
 let lanternImgs = [];
 
@@ -42,6 +37,13 @@ function preload() {
 }
 
 function setup() {
+  isMobileDevice = detectMobile();
+  if (isMobileDevice) {
+    lanternCount = 5; 
+  } else {
+    lanternCount = 10;
+  }
+
   const canvas = createCanvas(windowWidth, windowHeight);
   canvas.id("lantern-canvas");
   canvas.style("position", "absolute");
@@ -53,19 +55,18 @@ function setup() {
   for (let i = 0; i < lanternCount; i++) {
     lanterns.push(new Lantern());
   }
-  if (isMobile()) {
-    makeStars(10); // giảm số lượng sao khi trên điện thoại
-    // Điều chỉnh kích thước canvas và hiệu ứng cho phù hợp với điện thoại
-    canvas.style.width = window.innerWidth + "px";
-    canvas.style.height = window.innerHeight + "px";
+  if (isMobileDevice) {
+    makeStars(20); 
   } else {
     makeStars(80);
   }
+  frameRate(30);
   loadMessages();
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  isMobileDevice = detectMobile();
   // Reset lantern positions to spread across new canvas size
   for (let lantern of lanterns) {
     lantern.x = random(width);
@@ -75,12 +76,6 @@ function windowResized() {
 
 function draw() {
   clear();
-  // Limit frame rate to reduce CPU/GPU load on mobile devices
-  if (isMobile()) {
-    frameRate(15);
-  } else {
-    frameRate(30);
-  }
   lanterns.sort((a, b) => a.size - b.size); // Draw small lanterns first, large ones on top
   for (let lantern of lanterns) {
     lantern.update();
@@ -92,18 +87,19 @@ class Lantern {
   constructor() {
     this.x = random(width);
     this.y = random(height, height + 200);
-    this.size = random(40, 60); // Mostly close lanterns
-    this.alpha = map(this.size, 40, 60, 80, 150);
-    this.speed = random(0.1, 1.0);
+    this.size = random(40, 80);
+    this.alpha = map(this.size, 40, 80, 100, 200);
+    this.speed = random(0.2, 1.2);
     this.xOffset = random(1000);
     this.img = random(lanternImgs);
+    this.glowColor = color(255, 180, 100);
   }
 
   update() {
     this.y -= this.speed;
     this.x += sin(frameCount * 0.01 + this.xOffset) * 0.5;
-    if (this.y < -this.size) {
-      this.y = height + this.size;
+    if (this.y < -this.size * 2) {
+      this.y = height + this.size * 2;
       this.x = random(width);
     }
   }
@@ -111,25 +107,15 @@ class Lantern {
   display() {
     push();
     translate(this.x, this.y);
-    this.color = color(255, 200, 100, this.alpha); // More yellow light
-    // Use SCREEN blend mode for realistic light accumulation without over-brightening
-    blendMode(SCREEN);
-    // Flickering glow effect (faster flicker, fading from center)
+    
+    // More performant glow using shadow
     let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
-    let glow = 10 + flicker * 20; // Reduced range
-    for (let r = glow; r > 0; r -= 1) {
-      // Smaller steps for smoother
-      fill(
-        red(this.color),
-        green(this.color),
-        blue(this.color),
-        map(r, 0, glow, this.alpha * 0.3, 0) // Fade from center, reduced alpha
-      );
-      ellipse(0, 0, this.size + r, (this.size + r) * 1.2);
-    }
-    // Reset blend mode
-    blendMode(BLEND);
-    // Lantern image with alpha for dimming far lanterns
+    let glowSize = 20 + flicker * 25;
+    
+    drawingContext.shadowBlur = glowSize;
+    drawingContext.shadowColor = this.glowColor;
+
+    // Draw the lantern image
     tint(255, this.alpha);
     image(
       this.img,
@@ -138,7 +124,11 @@ class Lantern {
       this.size,
       this.size * 1.5
     );
-    tint(255, 255); // Reset tint
+    
+    // Reset shadow and tint for other elements
+    drawingContext.shadowBlur = 0;
+    noTint();
+    
     pop();
   }
 }
