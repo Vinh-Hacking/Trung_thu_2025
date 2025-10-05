@@ -49,6 +49,7 @@ function setup() {
   canvas.style("left", "0");
   canvas.style("z-index", "10");
   noStroke();
+  lanterns = []; // reset lanterns array on setup
   for (let i = 0; i < lanternCount; i++) {
     lanterns.push(new Lantern());
   }
