@@ -8,7 +8,7 @@ function detectMobile() {
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       userAgent
     );
-  const isSmallScreen = window.innerWidth < 2000;
+  const isSmallScreen = window.innerWidth < 222;
   console.log("UserAgent:", userAgent);
   console.log("isMobileUA:", isMobileUA);
   console.log("window.innerWidth:", window.innerWidth);
