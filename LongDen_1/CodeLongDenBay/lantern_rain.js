@@ -9,6 +9,11 @@ function detectMobile() {
       userAgent
     );
   const isSmallScreen = window.innerWidth < 2000;
+  console.log("UserAgent:", userAgent);
+  console.log("isMobileUA:", isMobileUA);
+  console.log("window.innerWidth:", window.innerWidth);
+  console.log("isSmallScreen:", isSmallScreen);
+  console.log("isMobileDevice:", isMobileUA && isSmallScreen);
   return isMobileUA && isSmallScreen;
 }
 
@@ -42,7 +47,7 @@ function preload() {
 function setup() {
   isMobileDevice = detectMobile();
   if (isMobileDevice) {
-    lanternCount = 3;
+    lanternCount = 10;
   } else {
     lanternCount = 50;
   }
@@ -60,8 +65,8 @@ function setup() {
     lanterns.push(new Lantern());
   }
   if (isMobileDevice) {
-    makeStars(10);
-    frameRate(15);
+    makeStars(50);
+    frameRate(30);
   } else {
     makeStars(80);
     frameRate(30);
@@ -72,11 +77,7 @@ function setup() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   isMobileDevice = detectMobile();
-  // Reset lantern positions to spread across new canvas size
-  for (let lantern of lanterns) {
-    lantern.x = random(width);
-    lantern.y = random(height, height + 200);
-  }
+  // Do not reset lantern positions on resize to avoid lanterns flying back up when zooming
 }
 
 function draw() {
@@ -113,23 +114,14 @@ class Lantern {
     push();
     translate(this.x, this.y);
 
-    if (!isMobileDevice) {
-      // More performant glow using shadow
-      let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
-      let glowSize = 60 + flicker * 40; // Keep smaller glow size as before
+    // Glow effect for both desktop and mobile
+    let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
+    let glowSize = 60 + flicker * 40; // Same glow size as desktop
 
-      // Set glow color to match CSS orange (255, 165, 0)
-      let glowColorIntense = color(255, 230, 0, 255);
-      drawingContext.shadowColor = glowColorIntense;
-      drawingContext.shadowBlur = glowSize; // Use glowSize for flickering effect
-
-      // Remove additional glow layer to reduce lag and keep smaller glow area
-      // drawingContext.globalCompositeOperation = "screen";
-      // fill(glowColorIntense);
-      // noStroke();
-      // ellipse(0, 0, this.size * 2.5, this.size * 3.5); // Draw a larger glow ellipse
-      // drawingContext.globalCompositeOperation = "source-over"; // Reset blend mode
-    }
+    // Set glow color to match CSS orange (255, 165, 0)
+    let glowColorIntense = color(255, 230, 0, 255);
+    drawingContext.shadowColor = glowColorIntense;
+    drawingContext.shadowBlur = glowSize; // Use glowSize for flickering effect
 
     // Draw the lantern image
     if (!isMobileDevice) {
