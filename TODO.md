@@ -5,8 +5,10 @@
 - [x] Remove rotation animation
 - [x] Add depth effect: lanterns far away (smaller size) are dimmer
 - [x] Add slow flickering glow effect (dim to bright)
-- [x] Increase lantern count for denser effect
-- [x] Random speeds for lanterns (slower)
+- [x] Reduce lantern count to 20 for less density
+- [x] Random speeds for lanterns (0.1 to 1.0 for more variation)
 - [x] Improve light effect: reduced glow range and alpha, removed bright center, ellipse fits image, light fades gradually from center, faster flicker (0.05), use SCREEN blend mode for realistic light accumulation without over-brightening
+- [x] Adjust star vertical range to 100%
+- [x] Fix lantern positions on window resize to spread across new canvas size
 - [x] Sort lanterns by size for layering (small behind large)
 - [x] Reduce far lanterns: mostly close lanterns with clear display

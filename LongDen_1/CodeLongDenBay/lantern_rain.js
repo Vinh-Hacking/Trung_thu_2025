@@ -1,5 +1,5 @@
 let lanterns = [];
-let lanternCount = 50;
+let lanternCount = 20;
 let messages = [];
 let lanternImgs = [];
 
@@ -41,6 +41,11 @@ function setup() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  // Reset lantern positions to spread across new canvas size
+  for (let lantern of lanterns) {
+    lantern.x = random(width);
+    lantern.y = random(height, height + 200);
+  }
 }
 
 function draw() {
@@ -58,7 +63,7 @@ class Lantern {
     this.y = random(height, height + 200);
     this.size = random(40, 60); // Mostly close lanterns
     this.alpha = map(this.size, 40, 60, 80, 150);
-    this.speed = random(0.2, 0.8);
+    this.speed = random(0.1, 1.0);
     this.xOffset = random(1000);
     this.img = random(lanternImgs);
   }
@@ -113,7 +118,7 @@ function makeStars(n = 80) {
     const star = document.createElement("div");
     star.className = "star";
     star.style.left = Math.random() * 100 + "%";
-    star.style.top = Math.random() * 40 + "%";
+    star.style.top = Math.random() * 100 + "%";
     const size = 1 + Math.random() * 3;
     star.style.width = size + "px";
     star.style.height = size + "px";
