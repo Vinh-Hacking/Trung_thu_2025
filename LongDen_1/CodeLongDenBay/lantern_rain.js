@@ -15,7 +15,7 @@ function isMobile() {
 if (isMobile()) {
   lanternCount = 1;
 } else {
-  lanternCount = 1;
+  lanternCount = 5; // reduce number of lanterns on desktop for better performance
 }
 let messages = [];
 let lanternImgs = [];
