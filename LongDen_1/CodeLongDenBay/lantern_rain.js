@@ -8,7 +8,7 @@ function isMobile() {
 }
 
 if (isMobile()) {
-  lanternCount = 10;
+  lanternCount = 6;
 } else {
   lanternCount = 20;
 }
