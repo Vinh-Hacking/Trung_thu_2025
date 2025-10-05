@@ -113,28 +113,17 @@ class Lantern {
     push();
     translate(this.x, this.y);
 
-    if (!isMobileDevice) {
-      // More performant glow using shadow
-      let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
-      let glowSize = 60 + flicker * 40; // Keep smaller glow size as before
+    // Glow effect for realistic lantern light on both desktop and mobile
+    let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
+    let glowSize = isMobileDevice ? 30 + flicker * 20 : 60 + flicker * 40; // Smaller glow on mobile for performance
 
-      // Set glow color to match CSS orange (255, 165, 0)
-      let glowColorIntense = color(255, 230, 0, 255);
-      drawingContext.shadowColor = glowColorIntense;
-      drawingContext.shadowBlur = glowSize; // Use glowSize for flickering effect
-
-      // Remove additional glow layer to reduce lag and keep smaller glow area
-      // drawingContext.globalCompositeOperation = "screen";
-      // fill(glowColorIntense);
-      // noStroke();
-      // ellipse(0, 0, this.size * 2.5, this.size * 3.5); // Draw a larger glow ellipse
-      // drawingContext.globalCompositeOperation = "source-over"; // Reset blend mode
-    }
+    // Set glow color to warm yellow
+    let glowColorIntense = color(255, 230, 0, 255);
+    drawingContext.shadowColor = glowColorIntense;
+    drawingContext.shadowBlur = glowSize;
 
     // Draw the lantern image
-    if (!isMobileDevice) {
-      tint(255, this.alpha);
-    }
+    tint(255, this.alpha);
     image(
       this.img,
       -this.size / 2,
