@@ -118,13 +118,10 @@ class Lantern {
       let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
       let glowSize = 60 + flicker * 40; // Keep smaller glow size as before
 
-      drawingContext.shadowBlur = glowSize;
-      // Set glow color to bright yellowish similar to 3 lanterns in index.html
-      let glowColorIntense = color(255, 110, 0, 255); // Orange color like in index.css filter: drop-shadow(0 0 20px orange)
+      // Set glow color to match CSS orange (255, 165, 0)
+      let glowColorIntense = color(255, 230, 0, 255);
       drawingContext.shadowColor = glowColorIntense;
-
-      // Increase shadowBlur slightly to make glow less dim
-      drawingContext.shadowBlur = glowSize + 10;
+      drawingContext.shadowBlur = glowSize; // Use glowSize for flickering effect
 
       // Remove additional glow layer to reduce lag and keep smaller glow area
       // drawingContext.globalCompositeOperation = "screen";
