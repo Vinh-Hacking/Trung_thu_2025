@@ -47,7 +47,11 @@ function setup() {
   for (let i = 0; i < lanternCount; i++) {
     lanterns.push(new Lantern());
   }
-  makeStars(80);
+  if (isMobile()) {
+    makeStars(20); // giảm số lượng sao khi trên điện thoại
+  } else {
+    makeStars(80);
+  }
   loadMessages();
 }
 
