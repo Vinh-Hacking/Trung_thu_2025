@@ -8,8 +8,13 @@ function detectMobile() {
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       userAgent
     );
-  const isSmallScreen = window.innerWidth <= 768;
-  return isMobileUA && isSmallScreen;
+  const isSmallScreen = window.innerWidth < 2000;
+  console.log("UserAgent:", userAgent);
+  console.log("isMobileUA:", isMobileUA);
+  console.log("window.innerWidth:", window.innerWidth);
+  console.log("isSmallScreen:", isSmallScreen);
+  console.log("isMobileDevice:", isMobileUA && isSmallScreen);
+  return isMobileUA || isSmallScreen;
 }
 
 let messages = [];
@@ -42,7 +47,7 @@ function preload() {
 function setup() {
   isMobileDevice = detectMobile();
   if (isMobileDevice) {
-    lanternCount = 3;
+    lanternCount = 10;
   } else {
     lanternCount = 50;
   }
@@ -60,8 +65,8 @@ function setup() {
     lanterns.push(new Lantern());
   }
   if (isMobileDevice) {
-    makeStars(10);
-    frameRate(15);
+    makeStars(50);
+    frameRate(30);
   } else {
     makeStars(80);
     frameRate(30);
@@ -72,11 +77,7 @@ function setup() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   isMobileDevice = detectMobile();
-  // Reset lantern positions to spread across new canvas size
-  for (let lantern of lanterns) {
-    lantern.x = random(width);
-    lantern.y = random(height, height + 200);
-  }
+  // Do not reset lantern positions on resize to avoid lanterns flying back up when zooming
 }
 
 function draw() {
@@ -113,14 +114,18 @@ class Lantern {
     push();
     translate(this.x, this.y);
 
-    // Glow effect for realistic lantern light on both desktop and mobile
+    // Glow effect using ellipse for both desktop and mobile
     let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
-    let glowSize = isMobileDevice ? 30 + flicker * 20 : 60 + flicker * 40; // Smaller glow on mobile for performance
+    let glowColorIntense = color(255, 230, 0, 150 + flicker * 100); // Alpha for glow
 
-    // Set glow color to warm yellow
-    let glowColorIntense = color(255, 230, 0, 255);
-    drawingContext.shadowColor = glowColorIntense;
-    drawingContext.shadowBlur = glowSize;
+    // Draw glow ellipse
+    drawingContext.globalCompositeOperation = "screen";
+    fill(glowColorIntense);
+    noStroke();
+    ellipse(0, 0, this.size * 2.5, this.size * 3.5);
+
+    // Reset blend mode
+    drawingContext.globalCompositeOperation = "source-over";
 
     // Draw the lantern image
     tint(255, this.alpha);
@@ -132,8 +137,7 @@ class Lantern {
       this.size * 1.5
     );
 
-    // Reset shadow and tint for other elements
-    drawingContext.shadowBlur = 0;
+    // Reset tint for other elements
     noTint();
 
     pop();
