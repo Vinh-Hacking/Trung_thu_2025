@@ -1,0 +1,9 @@
+- [x] Update preload in lantern_rain.js to load array of lantern images from "../AnhLongDenBay/"
+- [x] Modify Lantern constructor to assign a random image to each lantern
+- [x] Update Lantern display method to draw the image instead of ellipse
+- [x] Adjust size and positioning for image display
+- [x] Remove rotation animation
+- [x] Add depth effect: lanterns higher up are smaller and dimmer
+- [x] Add slow flickering glow effect (dim to bright)
+- [x] Increase lantern count for denser effect
+- [x] Random speeds for lanterns

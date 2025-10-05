@@ -1,0 +1,159 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+  height: 100vh;
+  overflow: hidden;
+  font-family: "Segoe UI", sans-serif;
+  color: #f9c74f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  margin: 20px 0;
+  text-align: center;
+  text-shadow: 0 0 10px #f9c74f;
+  z-index: 20;
+  position: relative;
+}
+
+#stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40vh;
+  z-index: 1;
+}
+
+#moon {
+  position: absolute;
+  top: 10%;
+  right: 10%;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(
+      circle at 30% 30%,
+      white 0%,
+      #ccc 50%,
+      #aaa 70%,
+      #888 100%
+    ),
+    radial-gradient(circle at 70% 20%, #000 0%, transparent 20%),
+    radial-gradient(circle at 20% 70%, #000 0%, transparent 20%),
+    radial-gradient(circle at 80% 80%, #000 0%, transparent 20%),
+    radial-gradient(circle at 50% 50%, #000 0%, transparent 20%);
+  border-radius: 50%;
+  box-shadow: 0 0 20px white;
+  z-index: 5;
+}
+
+#lantern-container {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.falling-lantern {
+  position: absolute;
+  top: -150px;
+  width: 80px;
+  height: 120px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 0 10px orange);
+  animation-name: fall, sway;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: 1, infinite;
+  animation-direction: normal, alternate;
+  z-index: 1;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+@keyframes sway {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(20px);
+  }
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 2s infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+#message-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 1000;
+  text-align: center;
+  max-width: 300px;
+  width: 300px;
+  height: auto;
+  pointer-events: auto;
+}
+
+#message-text {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+#close-popup {
+  background: #ffb347;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  pointer-events: auto;
+}
+
+#close-popup:hover {
+  background: #ff9933;
+}
+
+.lantern-1 {
+  background-image: url("img/den1.png");
+}
+
+.lantern-2 {
+  background-image: url("img/den2.png");
+}
+
+.lantern-3 {
+  background: blue;
+  border: 1px solid blue;
+}

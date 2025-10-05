@@ -7,22 +7,30 @@
   </head>
   <body>
     <div class="lanterns">
-      <div class="lantern">
+      <div class="lantern" id="lantern1">
         <div class="string"></div>
-        <img src="img/den1.png" alt="Đèn 1" />
+        <img src="LongDen_1/AnhDenTreo/den1.png" alt="Đèn 1" />
       </div>
       <div class="lantern">
         <div class="string"></div>
-        <img src="img/den2.png" alt="Đèn 2" />
+        <img src="LongDen_2/AnhDenTreo/den2.png" alt="Đèn 2" />
       </div>
       <div class="lantern">
         <div class="string"></div>
-        <img src="img/den3.png" alt="Đèn 3" />
+        <img src="LongDen_3/AnhDenTreo/den3.png" alt="Đèn 3" />
       </div>
     </div>
 
     <p class="caption">Ở đây có 3 lồng đèn</p>
 
     <script src="script.js"></script>
+    <script>
+      // Thêm sự kiện click cho đèn 1 để chuyển trang
+      document
+        .getElementById("lantern1")
+        .addEventListener("click", function () {
+          window.location.href = "LongDen_1/CodeLongDenBay/lantern_rain.html";
+        });
+    </script>
   </body>
 </html>
