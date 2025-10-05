@@ -2,15 +2,20 @@ let lanterns = [];
 let lanternCount = 10;
 
 function isMobile() {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  );
+  // More robust mobile detection including screen width check
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  const isMobileUA =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      userAgent
+    );
+  const isSmallScreen = window.innerWidth <= 768; // typical max width for mobile devices
+  return isMobileUA && isSmallScreen;
 }
 
 if (isMobile()) {
   lanternCount = 1;
 } else {
-  lanternCount = 20;
+  lanternCount = 1;
 }
 let messages = [];
 let lanternImgs = [];
