@@ -108,12 +108,14 @@ class Lantern {
     push();
     translate(this.x, this.y);
     
-    // More performant glow using shadow
-    let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
-    let glowSize = 20 + flicker * 25;
-    
-    drawingContext.shadowBlur = glowSize;
-    drawingContext.shadowColor = this.glowColor;
+    if (!isMobileDevice) {
+      // More performant glow using shadow
+      let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
+      let glowSize = 20 + flicker * 25;
+      
+      drawingContext.shadowBlur = glowSize;
+      drawingContext.shadowColor = this.glowColor;
+    }
 
     // Draw the lantern image
     tint(255, this.alpha);
