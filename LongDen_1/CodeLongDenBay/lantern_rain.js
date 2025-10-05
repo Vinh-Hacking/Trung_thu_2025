@@ -48,7 +48,10 @@ function setup() {
     lanterns.push(new Lantern());
   }
   if (isMobile()) {
-    makeStars(20); // giảm số lượng sao khi trên điện thoại
+    makeStars(10); // giảm số lượng sao khi trên điện thoại
+    // Điều chỉnh kích thước canvas và hiệu ứng cho phù hợp với điện thoại
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
   } else {
     makeStars(80);
   }
