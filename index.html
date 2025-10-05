@@ -6,8 +6,10 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <div id="stars" style="pointer-events: none"></div>
+    <div id="moon" style="pointer-events: none"></div>
     <div class="lanterns">
-      <div class="lantern" id="lantern1">
+      <div class="lantern" id="lantern1" style="cursor: pointer">
         <div class="string"></div>
         <img src="LongDen_1/AnhDenTreo/den1.png" alt="Đèn 1" />
       </div>
@@ -29,7 +31,7 @@
       document
         .getElementById("lantern1")
         .addEventListener("click", function () {
-          window.location.href = "LongDen_1/CodeLongDenBay/lantern_rain.html";
+          window.location.href = "./LongDen_1/CodeLongDenBay/lantern_rain.html";
         });
     </script>
   </body>

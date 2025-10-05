@@ -12,3 +12,4 @@
 - [x] Fix lantern positions on window resize to spread across new canvas size
 - [x] Sort lanterns by size for layering (small behind large)
 - [x] Reduce far lanterns: mostly close lanterns with clear display
+- [x] Add stars and moon to index.html
