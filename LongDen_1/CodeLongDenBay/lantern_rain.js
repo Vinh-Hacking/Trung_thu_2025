@@ -44,7 +44,7 @@ function setup() {
   if (isMobileDevice) {
     lanternCount = 3;
   } else {
-    lanternCount = 10;
+    lanternCount = 50;
   }
 
   const canvas = createCanvas(windowWidth, windowHeight);
@@ -93,7 +93,7 @@ class Lantern {
     this.x = random(width);
     this.y = random(height, height + 200);
     this.size = random(40, 80);
-    this.alpha = map(this.size, 40, 80, 100, 200);
+    this.alpha = random(150, 255);
     this.speed = random(0.2, 1.2);
     this.xOffset = random(1000);
     this.img = random(lanternImgs);
@@ -116,10 +116,22 @@ class Lantern {
     if (!isMobileDevice) {
       // More performant glow using shadow
       let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
-      let glowSize = 20 + flicker * 25;
+      let glowSize = 60 + flicker * 40; // Keep smaller glow size as before
 
       drawingContext.shadowBlur = glowSize;
-      drawingContext.shadowColor = this.glowColor;
+      // Set glow color to bright yellowish similar to 3 lanterns in index.html
+      let glowColorIntense = color(255, 110, 0, 255); // Orange color like in index.css filter: drop-shadow(0 0 20px orange)
+      drawingContext.shadowColor = glowColorIntense;
+
+      // Increase shadowBlur slightly to make glow less dim
+      drawingContext.shadowBlur = glowSize + 10;
+
+      // Remove additional glow layer to reduce lag and keep smaller glow area
+      // drawingContext.globalCompositeOperation = "screen";
+      // fill(glowColorIntense);
+      // noStroke();
+      // ellipse(0, 0, this.size * 2.5, this.size * 3.5); // Draw a larger glow ellipse
+      // drawingContext.globalCompositeOperation = "source-over"; // Reset blend mode
     }
 
     // Draw the lantern image
