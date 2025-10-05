@@ -75,6 +75,12 @@ function windowResized() {
 
 function draw() {
   clear();
+  // Limit frame rate to reduce CPU/GPU load on mobile devices
+  if (isMobile()) {
+    frameRate(15);
+  } else {
+    frameRate(30);
+  }
   lanterns.sort((a, b) => a.size - b.size); // Draw small lanterns first, large ones on top
   for (let lantern of lanterns) {
     lantern.update();
