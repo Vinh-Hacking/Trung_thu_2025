@@ -1,15 +1,7 @@
-- [x] Update preload in lantern_rain.js to load array of lantern images from "../AnhLongDenBay/"
-- [x] Modify Lantern constructor to assign a random image to each lantern
-- [x] Update Lantern display method to draw the image instead of ellipse
-- [x] Adjust size and positioning for image display
-- [x] Remove rotation animation
-- [x] Add depth effect: lanterns far away (smaller size) are dimmer
-- [x] Add slow flickering glow effect (dim to bright)
-- [x] Reduce lantern count to 20 for less density
-- [x] Random speeds for lanterns (0.1 to 1.0 for more variation)
-- [x] Improve light effect: reduced glow range and alpha, removed bright center, ellipse fits image, light fades gradually from center, faster flicker (0.05), use SCREEN blend mode for realistic light accumulation without over-brightening
-- [x] Adjust star vertical range to 100%
-- [x] Fix lantern positions on window resize to spread across new canvas size
-- [x] Sort lanterns by size for layering (small behind large)
-- [x] Reduce far lanterns: mostly close lanterns with clear display
-- [x] Add stars and moon to index.html
+- [ ] Giảm frameRate xuống 15 trên mobile trong setup()
+- [ ] Giảm lanternCount xuống 3 trên mobile
+- [ ] Giảm số ngôi sao xuống 10 trên mobile
+- [ ] Vô hiệu hóa alpha tinting trên mobile trong Lantern.display()
+- [ ] Thêm pixelDensity(1) trên mobile để tránh retina scaling
+- [ ] Tối ưu preload: chỉ load 3 hình ngẫu nhiên thay vì 6
+- [ ] Kiểm tra và test trên mobile emulation

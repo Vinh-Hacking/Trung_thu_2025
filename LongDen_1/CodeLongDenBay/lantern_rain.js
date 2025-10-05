@@ -16,30 +16,33 @@ let messages = [];
 let lanternImgs = [];
 
 function preload() {
-  lanternImgs.push(
-    loadImage("../AnhLongDenBay/Lồng_đèn_1-removebg-preview.png")
-  );
-  lanternImgs.push(
-    loadImage("../AnhLongDenBay/Lồng_đèn_2-removebg-preview.png")
-  );
-  lanternImgs.push(
-    loadImage("../AnhLongDenBay/Lồng_đèn_3-removebg-preview.png")
-  );
-  lanternImgs.push(
-    loadImage("../AnhLongDenBay/Lồng_đèn_4-removebg-preview.png")
-  );
-  lanternImgs.push(
-    loadImage("../AnhLongDenBay/Lồng_đèn_5-removebg-preview.png")
-  );
-  lanternImgs.push(
-    loadImage("../AnhLongDenBay/Lồng_đèn_6-removebg-preview.png")
-  );
+  isMobileDevice = detectMobile();
+  let lanternsToLoad = isMobileDevice ? 3 : 6;
+  let allLanternPaths = [
+    "../AnhLongDenBay/Lồng_đèn_1-removebg-preview.png",
+    "../AnhLongDenBay/Lồng_đèn_2-removebg-preview.png",
+    "../AnhLongDenBay/Lồng_đèn_3-removebg-preview.png",
+    "../AnhLongDenBay/Lồng_đèn_4-removebg-preview.png",
+    "../AnhLongDenBay/Lồng_đèn_5-removebg-preview.png",
+    "../AnhLongDenBay/Lồng_đèn_6-removebg-preview.png",
+  ];
+  // Randomly select lanternsToLoad images to preload
+  let selectedLanterns = [];
+  while (selectedLanterns.length < lanternsToLoad) {
+    let idx = floor(random(allLanternPaths.length));
+    if (!selectedLanterns.includes(allLanternPaths[idx])) {
+      selectedLanterns.push(allLanternPaths[idx]);
+    }
+  }
+  for (let path of selectedLanterns) {
+    lanternImgs.push(loadImage(path));
+  }
 }
 
 function setup() {
   isMobileDevice = detectMobile();
   if (isMobileDevice) {
-    lanternCount = 5; 
+    lanternCount = 3;
   } else {
     lanternCount = 10;
   }
@@ -51,16 +54,18 @@ function setup() {
   canvas.style("left", "0");
   canvas.style("z-index", "10");
   noStroke();
+  pixelDensity(isMobileDevice ? 1 : 2);
   lanterns = []; // reset lanterns array on setup
   for (let i = 0; i < lanternCount; i++) {
     lanterns.push(new Lantern());
   }
   if (isMobileDevice) {
-    makeStars(20); 
+    makeStars(10);
+    frameRate(15);
   } else {
     makeStars(80);
+    frameRate(30);
   }
-  frameRate(30);
   loadMessages();
 }
 
@@ -107,18 +112,20 @@ class Lantern {
   display() {
     push();
     translate(this.x, this.y);
-    
+
     if (!isMobileDevice) {
       // More performant glow using shadow
       let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
       let glowSize = 20 + flicker * 25;
-      
+
       drawingContext.shadowBlur = glowSize;
       drawingContext.shadowColor = this.glowColor;
     }
 
     // Draw the lantern image
-    tint(255, this.alpha);
+    if (!isMobileDevice) {
+      tint(255, this.alpha);
+    }
     image(
       this.img,
       -this.size / 2,
@@ -126,11 +133,11 @@ class Lantern {
       this.size,
       this.size * 1.5
     );
-    
+
     // Reset shadow and tint for other elements
     drawingContext.shadowBlur = 0;
     noTint();
-    
+
     pop();
   }
 }
