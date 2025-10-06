@@ -1,3 +1,1 @@
-- [x] Modify Rocket constructor in fireworks_improved.js to add isSpecial property with 30% chance
-- [x] Modify explode method to use random colors from colors array if isSpecial
-- [ ] Test the changes by running phaohoa.html
+- [x] Thay đổi background-size từ 'cover' thành 'contain' trong LongDen_3/banhtrungthu.html để ảnh nền thu nhỏ theo tỷ lệ và hiển thị toàn bộ ảnh.

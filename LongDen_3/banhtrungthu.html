@@ -7,8 +7,8 @@
       body {
         margin: 0;
         padding: 0;
-        background: url("AnhNen/AnhNen.jpg") no-repeat center center fixed;
-        background-size: cover;
+        background: url("AnhNen/AnhNen2.png") no-repeat center center fixed;
+        background-size: contain;
         height: 100vh;
         display: flex;
         flex-direction: column;
@@ -19,11 +19,50 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 20px;
+        gap: 1vw;
+        margin-top: -40px;
+      }
+      .mooncake {
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.3s ease;
       }
       .mooncake img {
-        width: 200px;
-        height: auto;
+        width: 25vw;
+        height: 25vw;
+        max-width: 200px;
+        max-height: 200px;
+        object-fit: cover;
+        display: block;
+      }
+      .mooncake.active {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 10px #ffcc00);
+        z-index: 10;
+      }
+      .message {
+        position: absolute;
+        top: 110%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #ffdb00;
+        color: #d80000;
+        border-radius: 10px;
+        padding: 10px 15px;
+        font-weight: bold;
+        font-size: 18px;
+        /* Remove writing-mode to show normal vertical stacking */
+        /* writing-mode: vertical-lr; */
+        text-align: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        box-shadow: 0 0 10px #d80000;
+      }
+      .message.show {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(-50%);
       }
     </style>
   </head>
@@ -34,19 +73,43 @@
           src="BanhTrungThu/480eb7e2-d479-412d-a887-3fa7a72e5527.png"
           alt="Bánh Trung Thu 1"
         />
+        <div class="message">
+          Chúc<br />em<br />trung<br />thu<br />vui<br />vẻ
+        </div>
       </div>
       <div class="mooncake">
         <img
           src="BanhTrungThu/A Chinese pastry traditionally eaten during the….png"
           alt="Bánh Trung Thu 2"
         />
+        <div class="message">
+          Chúc<br />em<br />trung<br />thu<br />vui<br />vẻ
+        </div>
       </div>
       <div class="mooncake">
         <img
           src="BanhTrungThu/d0c273ab-234d-4e98-8144-634f83e051bd.png"
           alt="Bánh Trung Thu 3"
         />
+        <div class="message">
+          Chúc<br />em<br />trung<br />thu<br />vui<br />vẻ
+        </div>
       </div>
     </div>
+    <script>
+      const mooncakes = document.querySelectorAll(".mooncake");
+      mooncakes.forEach((mooncake) => {
+        mooncake.addEventListener("click", () => {
+          // Remove active and hide messages from all mooncakes
+          mooncakes.forEach((mc) => {
+            mc.classList.remove("active");
+            mc.querySelector(".message").classList.remove("show");
+          });
+          // Add active class and show message for clicked mooncake
+          mooncake.classList.add("active");
+          mooncake.querySelector(".message").classList.add("show");
+        });
+      });
+    </script>
   </body>
 </html>
