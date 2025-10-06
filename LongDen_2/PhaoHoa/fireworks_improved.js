@@ -1,4 +1,4 @@
-// Improved Vanilla JS fireworks effect (Version 6.0 - Đã tối ưu hiệu suất)
+// Improved Vanilla JS fireworks effect (Version 9.0 - Chỉ 1 Quả/Click + Giới hạn 5)
 
 const canvas = document.getElementById("fireworks");
 const ctx = canvas.getContext("2d");
@@ -12,27 +12,30 @@ window.addEventListener("resize", resizeCanvas);
 
 // Cài đặt giới hạn tối đa số lượng pháo hoa đang bay
 const MAX_ROCKETS = 5;
+// Cài đặt độ trễ click (300ms = 0.3s)
+const CLICK_DELAY_MS = 300;
+let isClickReady = true; // Cờ kiểm soát độ trễ
 
 const gravity = 0.08;
 const wind = 0.02;
 const particles = [];
 const rockets = [];
 const colors = [
-  "#ff0043", // Pink-Red
-  "#14fc56", // Bright Green
-  "#1e90ff", // Dodger Blue
-  "#ffae00", // Orange-Yellow
-  "#ff00ff", // Magenta
-  "#00ff00", // Lime Green
-  "#ffff00", // Yellow
-  "#ff4500", // Orange-Red
-  "#8a2be2", // Blue Violet
-  "#00ffff", // Cyan
-  "#ffa500", // Orange
-  "#dc143c", // Crimson
-  "#32cd32", // Lime Green (lighter)
-  "#ff1493", // Deep Pink
-  "#00bfff", // Deep Sky Blue
+  "#ff0043",
+  "#14fc56",
+  "#1e90ff",
+  "#ffae00",
+  "#ff00ff",
+  "#00ff00",
+  "#ffff00",
+  "#ff4500",
+  "#8a2be2",
+  "#00ffff",
+  "#ffa500",
+  "#dc143c",
+  "#32cd32",
+  "#ff1493",
+  "#00bfff",
 ];
 
 // Helper to convert hex to RGB string
@@ -46,7 +49,7 @@ function hexToRgb(hex) {
     : null;
 }
 
-// --- Particle Class with Enhanced Glow and Trail ---
+// --- Particle Class ---
 class Particle {
   constructor(x, y, color, vx, vy, size, life, trail = true) {
     this.x = x;
@@ -90,7 +93,6 @@ class Particle {
   }
 
   draw() {
-    // Draw trail
     if (this.trail) {
       ctx.save();
       for (let i = 0; i < this.trail.length - 1; i++) {
@@ -112,11 +114,9 @@ class Particle {
       ctx.restore();
     }
 
-    // Draw particle with Radial Gradient and Shadow (Glow)
     ctx.save();
 
-    // TỐI ƯU HÓA A: Giảm ShadowBlur
-    ctx.shadowBlur = this.size * 2.5; // Giảm từ *4 xuống *2.5
+    ctx.shadowBlur = this.size * 2.5;
     ctx.shadowColor = this.color;
 
     ctx.globalAlpha = this.alpha > 0 ? this.alpha : 0;
@@ -178,36 +178,35 @@ class Rocket {
     let count, speed, angleOffset;
     let radialOffset = 0;
 
-    // TỐI ƯU HÓA B: Giảm số lượng hạt sinh ra
     switch (pattern) {
-      case 0: // Circle
-        count = 55; // Giảm từ 70
+      case 0:
+        count = 55;
         speed = Math.random() * 2.5 + 2.5;
         angleOffset = 0;
         break;
-      case 1: // Star
+      case 1:
         count = 50;
         speed = Math.random() * 5 + 5;
         angleOffset = Math.PI / 5;
         break;
-      case 2: // Burst
-        count = 80; // Giảm từ 100
+      case 2:
+        count = 80;
         speed = Math.random() * 1.5 + 1.5;
         angleOffset = 0;
         break;
-      case 3: // Heart
+      case 3:
         count = 50;
         speed = Math.random() * 2 + 2;
         angleOffset = 0;
         break;
-      case 4: // Ring/Donut
+      case 4:
         count = 60;
         speed = Math.random() * 1 + 1.5;
         angleOffset = 0;
         radialOffset = 15;
         break;
-      case 5: // Vertical Stream
-        count = 65; // Giảm từ 80
+      case 5:
+        count = 65;
         speed = Math.random() * 3 + 3;
         angleOffset = 0;
         break;
@@ -219,7 +218,6 @@ class Rocket {
       let startY = this.y;
 
       if (pattern === 3) {
-        // Heart logic
         angle = (Math.PI * 2 * i) / count;
         const t = angle;
         vx = 16 * Math.pow(Math.sin(t), 3);
@@ -234,14 +232,11 @@ class Rocket {
         vy = (vy / len) * speed * 0.1;
       } else {
         angle = (Math.PI * 2 * i) / count + angleOffset * Math.floor(i / 5);
-
         vx = Math.cos(angle) * speed;
         vy = Math.sin(angle) * speed;
-
         if (pattern === 5) {
           vy += Math.sign(vy) * (Math.random() * 3 + 2);
         }
-
         if (pattern === 4) {
           startX += Math.cos(angle) * radialOffset;
           startY += Math.sin(angle) * radialOffset;
@@ -257,7 +252,7 @@ class Rocket {
       particles.push(new Particle(startX, startY, color, vx, vy, size, life));
     }
 
-    // Secondary explosion (Giữ nguyên)
+    // Secondary explosion
     setTimeout(() => {
       for (let i = 0; i < 25; i++) {
         const angle = Math.random() * Math.PI * 2;
@@ -284,7 +279,6 @@ class Rocket {
 
   draw() {
     if (!this.exploded) {
-      // Draw rocket trail with glow
       ctx.save();
       ctx.shadowBlur = 10;
       ctx.shadowColor = this.isSpecial ? "#ffffaa" : this.color;
@@ -308,7 +302,6 @@ class Rocket {
       }
       ctx.restore();
 
-      // Draw rocket head
       ctx.save();
       ctx.fillStyle = "white";
       ctx.beginPath();
@@ -342,9 +335,7 @@ function animate() {
     }
   }
 
-  // TỐI ƯU HÓA C: Giảm giới hạn hạt tối đa
   if (particles.length > 900) {
-    // Giảm từ 1200 xuống 900
     particles.splice(0, particles.length - 900);
   }
 
@@ -354,22 +345,28 @@ function animate() {
 // --- Launch Logic (Áp dụng giới hạn) ---
 
 function launchRocket(x = Math.random() * canvas.width) {
+  // GIỚI HẠN: Nếu đã có 5 quả, không phóng thêm
   if (rockets.length >= MAX_ROCKETS) {
     return;
   }
   rockets.push(new Rocket(x));
 }
 
-// Xử lý Click (Áp dụng giới hạn 5 quả)
+// Xử lý Click ĐÃ SỬA: CHỈ GỌI launchRocket MỘT LẦN
 canvas.addEventListener("click", (e) => {
-  const x = e.clientX;
-  const offsetX = (Math.random() - 0.5) * 50;
+  // 1. Kiểm tra cờ trễ (300ms)
+  if (!isClickReady) {
+    return;
+  }
 
-  // Gọi launchRocket 5 lần. Hàm sẽ tự động dừng nếu đạt MAX_ROCKETS
-  launchRocket(x + offsetX);
-  launchRocket(x - offsetX);
-  launchRocket(x + 10);
-  launchRocket(x - 10);
+  // 2. Đặt cờ trễ và hẹn giờ khôi phục
+  isClickReady = false;
+  setTimeout(() => {
+    isClickReady = true;
+  }, CLICK_DELAY_MS);
+
+  // 3. Thực hiện phóng MỘT quả duy nhất tại vị trí click
+  const x = e.clientX;
   launchRocket(x);
 });
 
@@ -380,7 +377,7 @@ setInterval(() => {
 
 animate();
 
-// --- Star Field Logic (Giữ nguyên) ---
+// --- Star Field Logic ---
 function makeStars(n = 80) {
   const starsDiv = document.getElementById("stars");
   if (!starsDiv) return;
