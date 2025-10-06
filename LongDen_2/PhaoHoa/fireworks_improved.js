@@ -1,4 +1,4 @@
-// Improved Vanilla JS fireworks effect with realistic graphics (Version 2.0 - TỐI ƯU HÓA GLOW & VỆT SÁNG)
+// Improved Vanilla JS fireworks effect (Version 6.0 - Đã tối ưu hiệu suất)
 
 const canvas = document.getElementById("fireworks");
 const ctx = canvas.getContext("2d");
@@ -9,6 +9,9 @@ function resizeCanvas() {
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
+
+// Cài đặt giới hạn tối đa số lượng pháo hoa đang bay
+const MAX_ROCKETS = 5;
 
 const gravity = 0.08;
 const wind = 0.02;
@@ -56,7 +59,7 @@ class Particle {
     this.maxLife = life;
     this.alpha = 1;
     this.trail = trail ? [] : null;
-    this.twinkle = Math.random() > 0.4; // Increased twinkle chance
+    this.twinkle = Math.random() > 0.4;
     this.twinkleSpeed = 0.1 + Math.random() * 0.3;
     this.twinklePhase = Math.random() * Math.PI * 2;
   }
@@ -64,7 +67,6 @@ class Particle {
   update() {
     if (this.trail) {
       this.trail.push({ x: this.x, y: this.y, alpha: this.alpha });
-      // CẢI TIẾN: Tăng độ dài vệt sáng lên 15 đơn vị (từ 5)
       if (this.trail.length > 15) this.trail.shift();
     }
 
@@ -94,7 +96,6 @@ class Particle {
       for (let i = 0; i < this.trail.length - 1; i++) {
         const p1 = this.trail[i];
         const p2 = this.trail[i + 1];
-        // CẢI TIẾN: Giảm tốc độ mờ của vệt sáng (từ 0.5 lên 0.8)
         const alphaFade = (i / this.trail.length) * 0.8;
 
         ctx.strokeStyle = `rgba(${hexToRgb(this.color)}, ${
@@ -111,11 +112,11 @@ class Particle {
       ctx.restore();
     }
 
-    // Draw particle with Radial Gradient (for soft edge) and Shadow (for glow)
+    // Draw particle with Radial Gradient and Shadow (Glow)
     ctx.save();
 
-    // CẢI TIẾN: Tăng độ mờ (glow) mạnh hơn (từ *3 lên *4)
-    ctx.shadowBlur = this.size * 4;
+    // TỐI ƯU HÓA A: Giảm ShadowBlur
+    ctx.shadowBlur = this.size * 2.5; // Giảm từ *4 xuống *2.5
     ctx.shadowColor = this.color;
 
     ctx.globalAlpha = this.alpha > 0 ? this.alpha : 0;
@@ -128,7 +129,7 @@ class Particle {
       this.y,
       this.size * 1.5
     );
-    grad.addColorStop(0, "white"); // Bright core
+    grad.addColorStop(0, "white");
     grad.addColorStop(0.5, this.color);
     grad.addColorStop(1, `rgba(${hexToRgb(this.color)}, 0)`);
 
@@ -148,7 +149,9 @@ class Rocket {
     this.y = canvas.height;
     this.color = colors[Math.floor(Math.random() * colors.length)];
     this.vx = (Math.random() - 0.5) * 1.5;
-    this.vy = -(Math.random() * 4 + 6);
+
+    this.vy = -(Math.random() * 3 + 5);
+
     this.size = 5;
     this.exploded = false;
     this.trail = [];
@@ -171,11 +174,14 @@ class Rocket {
   }
 
   explode() {
-    const pattern = Math.floor(Math.random() * 4);
+    const pattern = Math.floor(Math.random() * 6);
     let count, speed, angleOffset;
+    let radialOffset = 0;
+
+    // TỐI ƯU HÓA B: Giảm số lượng hạt sinh ra
     switch (pattern) {
       case 0: // Circle
-        count = 70;
+        count = 55; // Giảm từ 70
         speed = Math.random() * 2.5 + 2.5;
         angleOffset = 0;
         break;
@@ -185,7 +191,7 @@ class Rocket {
         angleOffset = Math.PI / 5;
         break;
       case 2: // Burst
-        count = 100;
+        count = 80; // Giảm từ 100
         speed = Math.random() * 1.5 + 1.5;
         angleOffset = 0;
         break;
@@ -194,11 +200,26 @@ class Rocket {
         speed = Math.random() * 2 + 2;
         angleOffset = 0;
         break;
+      case 4: // Ring/Donut
+        count = 60;
+        speed = Math.random() * 1 + 1.5;
+        angleOffset = 0;
+        radialOffset = 15;
+        break;
+      case 5: // Vertical Stream
+        count = 65; // Giảm từ 80
+        speed = Math.random() * 3 + 3;
+        angleOffset = 0;
+        break;
     }
 
     for (let i = 0; i < count; i++) {
       let angle, vx, vy;
+      let startX = this.x;
+      let startY = this.y;
+
       if (pattern === 3) {
+        // Heart logic
         angle = (Math.PI * 2 * i) / count;
         const t = angle;
         vx = 16 * Math.pow(Math.sin(t), 3);
@@ -213,17 +234,30 @@ class Rocket {
         vy = (vy / len) * speed * 0.1;
       } else {
         angle = (Math.PI * 2 * i) / count + angleOffset * Math.floor(i / 5);
+
         vx = Math.cos(angle) * speed;
         vy = Math.sin(angle) * speed;
+
+        if (pattern === 5) {
+          vy += Math.sign(vy) * (Math.random() * 3 + 2);
+        }
+
+        if (pattern === 4) {
+          startX += Math.cos(angle) * radialOffset;
+          startY += Math.sin(angle) * radialOffset;
+        }
       }
+
       const size = Math.random() * 2.5 + 1;
       const life = 120 + Math.random() * 80;
       const color = this.isSpecial
         ? colors[Math.floor(Math.random() * colors.length)]
         : this.color;
-      particles.push(new Particle(this.x, this.y, color, vx, vy, size, life));
+
+      particles.push(new Particle(startX, startY, color, vx, vy, size, life));
     }
 
+    // Secondary explosion (Giữ nguyên)
     setTimeout(() => {
       for (let i = 0; i < 25; i++) {
         const angle = Math.random() * Math.PI * 2;
@@ -246,15 +280,12 @@ class Rocket {
         );
       }
     }, 150);
-
-    playSound();
   }
 
   draw() {
     if (!this.exploded) {
       // Draw rocket trail with glow
       ctx.save();
-      // CẢI TIẾN: Tăng glow cho đuôi rocket
       ctx.shadowBlur = 10;
       ctx.shadowColor = this.isSpecial ? "#ffffaa" : this.color;
 
@@ -288,17 +319,16 @@ class Rocket {
   }
 }
 
-// --- Main Animation Loop with Background Fix ---
+// --- Main Animation Loop ---
 function animate() {
-  // KHẮC PHỤC: Sử dụng ctx.clearRect để xóa canvas HOÀN TOÀN,
-  // Đảm bảo background DOM (sao và trăng) không bị che.
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   for (let i = rockets.length - 1; i >= 0; i--) {
     const rocket = rockets[i];
     rocket.update();
     rocket.draw();
-    if (rocket.exploded && rocket.trail.length === 0) {
+
+    if (rocket.exploded) {
       rockets.splice(i, 1);
     }
   }
@@ -312,42 +342,45 @@ function animate() {
     }
   }
 
-  if (particles.length > 1200) {
-    particles.splice(0, particles.length - 1200);
+  // TỐI ƯU HÓA C: Giảm giới hạn hạt tối đa
+  if (particles.length > 900) {
+    // Giảm từ 1200 xuống 900
+    particles.splice(0, particles.length - 900);
   }
 
   requestAnimationFrame(animate);
 }
 
-// --- Sound and Launch Logic (Kept the same) ---
-function playSound() {
-  const sounds = [
-    "https://freesound.org/data/previews/316/316847_5123451-lq.mp3",
-    "https://freesound.org/data/previews/316/316848_5123451-lq.mp3",
-    "https://freesound.org/data/previews/316/316849_5123451-lq.mp3",
-  ];
-  const audio = new Audio(sounds[Math.floor(Math.random() * sounds.length)]);
-  audio.volume = 0.3;
-  audio.play().catch(() => {});
-}
+// --- Launch Logic (Áp dụng giới hạn) ---
 
-function launchRocket() {
-  const x = Math.random() * canvas.width;
+function launchRocket(x = Math.random() * canvas.width) {
+  if (rockets.length >= MAX_ROCKETS) {
+    return;
+  }
   rockets.push(new Rocket(x));
 }
 
+// Xử lý Click (Áp dụng giới hạn 5 quả)
 canvas.addEventListener("click", (e) => {
   const x = e.clientX;
-  rockets.push(new Rocket(x));
+  const offsetX = (Math.random() - 0.5) * 50;
+
+  // Gọi launchRocket 5 lần. Hàm sẽ tự động dừng nếu đạt MAX_ROCKETS
+  launchRocket(x + offsetX);
+  launchRocket(x - offsetX);
+  launchRocket(x + 10);
+  launchRocket(x - 10);
+  launchRocket(x);
 });
 
+// Phóng tự động (Tần suất 2000ms, áp dụng giới hạn 5 quả)
 setInterval(() => {
   launchRocket();
-}, 1200);
+}, 2000);
 
 animate();
 
-// --- Star Field Logic (Kept the same) ---
+// --- Star Field Logic (Giữ nguyên) ---
 function makeStars(n = 80) {
   const starsDiv = document.getElementById("stars");
   if (!starsDiv) return;
