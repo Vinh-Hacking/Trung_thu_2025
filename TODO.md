@@ -1,1 +1,2 @@
 - [x] Thay đổi background-size từ 'cover' thành 'contain' trong LongDen_3/banhtrungthu.html để ảnh nền thu nhỏ theo tỷ lệ và hiển thị toàn bộ ảnh.
+- [x] Thay đổi background-size thành 'auto 100%' và background-position thành 'left center' trong LongDen_3/banhtrungthu.html để khi thu nhỏ cửa sổ, ảnh nền lấp đầy bằng cách cắt bên phải.
