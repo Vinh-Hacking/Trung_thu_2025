@@ -74,7 +74,7 @@
           alt="Bánh Trung Thu 1"
         />
         <div class="message">
-          Chúc<br />bạn<br />một<br />mùa<br />trung<br />thu<br />vui<br />vẻ
+          Chúc<br />bạn<br />trung<br />thu<br />vui<br />vẻ
         </div>
       </div>
       <div class="mooncake">
@@ -94,6 +94,7 @@
         <div class="message">Hạnh<br />phúc<br />bên<br />gia<br />đình</div>
       </div>
     </div>
+    <div class="bottom-message">Nhấn vào 3 chiếc bánh bên trên</div>
     <script>
       const mooncakes = document.querySelectorAll(".mooncake");
       mooncakes.forEach((mooncake) => {
@@ -109,5 +110,22 @@
         });
       });
     </script>
+    <style>
+      .bottom-message {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #ffdb00;
+        color: #d80000;
+        padding: 10px 20px;
+        font-weight: bold;
+        font-size: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #d80000;
+        z-index: 1000;
+        user-select: none;
+      }
+    </style>
   </body>
 </html>
