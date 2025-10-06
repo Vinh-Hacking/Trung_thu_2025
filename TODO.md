@@ -1,4 +1,3 @@
-- [x] Thêm thuộc tính message cho class Lantern trong constructor
-- [x] Thêm hàm mousePressed() để xử lý click trên lồng đèn
-- [x] Sửa hàm showMessage() để nhận message làm tham số
-- [x] Test chức năng bằng cách chạy lantern_rain.html và click vào lồng
+- [x] Modify Rocket constructor in fireworks_improved.js to add isSpecial property with 30% chance
+- [x] Modify explode method to use random colors from colors array if isSpecial
+- [ ] Test the changes by running phaohoa.html

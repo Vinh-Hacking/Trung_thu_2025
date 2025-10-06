@@ -1,4 +1,4 @@
-// Improved Vanilla JS fireworks effect with realistic graphics
+// Improved Vanilla JS fireworks effect with realistic graphics (Version 2.0 - TỐI ƯU HÓA GLOW & VỆT SÁNG)
 
 const canvas = document.getElementById("fireworks");
 const ctx = canvas.getContext("2d");
@@ -15,23 +15,35 @@ const wind = 0.02;
 const particles = [];
 const rockets = [];
 const colors = [
-  "#ff0043",
-  "#14fc56",
-  "#1e90ff",
-  "#ffae00",
-  "#ff00ff",
-  "#00ff00",
-  "#ffff00",
-  "#ff4500",
-  "#8a2be2",
-  "#00ffff",
-  "#ffa500",
-  "#dc143c",
-  "#32cd32",
-  "#ff1493",
-  "#00bfff",
+  "#ff0043", // Pink-Red
+  "#14fc56", // Bright Green
+  "#1e90ff", // Dodger Blue
+  "#ffae00", // Orange-Yellow
+  "#ff00ff", // Magenta
+  "#00ff00", // Lime Green
+  "#ffff00", // Yellow
+  "#ff4500", // Orange-Red
+  "#8a2be2", // Blue Violet
+  "#00ffff", // Cyan
+  "#ffa500", // Orange
+  "#dc143c", // Crimson
+  "#32cd32", // Lime Green (lighter)
+  "#ff1493", // Deep Pink
+  "#00bfff", // Deep Sky Blue
 ];
 
+// Helper to convert hex to RGB string
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
+        result[3],
+        16
+      )}`
+    : null;
+}
+
+// --- Particle Class with Enhanced Glow and Trail ---
 class Particle {
   constructor(x, y, color, vx, vy, size, life, trail = true) {
     this.x = x;
@@ -44,47 +56,53 @@ class Particle {
     this.maxLife = life;
     this.alpha = 1;
     this.trail = trail ? [] : null;
-    this.twinkle = Math.random() > 0.5;
-    this.twinkleSpeed = 0.1 + Math.random() * 0.2;
+    this.twinkle = Math.random() > 0.4; // Increased twinkle chance
+    this.twinkleSpeed = 0.1 + Math.random() * 0.3;
     this.twinklePhase = Math.random() * Math.PI * 2;
   }
 
   update() {
     if (this.trail) {
       this.trail.push({ x: this.x, y: this.y, alpha: this.alpha });
-      if (this.trail.length > 10) this.trail.shift();
+      // CẢI TIẾN: Tăng độ dài vệt sáng lên 15 đơn vị (từ 5)
+      if (this.trail.length > 15) this.trail.shift();
     }
-    this.vx *= 0.98;
-    this.vy *= 0.98;
+
+    this.vx *= 0.97;
+    this.vy *= 0.97;
+
     this.vy += gravity;
-    this.vx += wind * (Math.random() - 0.5);
+    this.vx += wind * (Math.random() - 0.5) * 2;
+
     this.x += this.vx;
     this.y += this.vy;
+
     this.alpha = this.life / this.maxLife;
+
     if (this.twinkle) {
       this.twinklePhase += this.twinkleSpeed;
-      this.alpha *= 0.5 + 0.5 * Math.sin(this.twinklePhase);
+      this.alpha *= 0.4 + 0.6 * (Math.sin(this.twinklePhase) * 0.5 + 0.5);
     }
+
     this.life--;
   }
 
   draw() {
+    // Draw trail
     if (this.trail) {
       ctx.save();
       for (let i = 0; i < this.trail.length - 1; i++) {
         const p1 = this.trail[i];
         const p2 = this.trail[i + 1];
-        const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
-        grad.addColorStop(
-          0,
-          `rgba(${hexToRgb(this.color)}, ${p1.alpha * 0.5})`
-        );
-        grad.addColorStop(
-          1,
-          `rgba(${hexToRgb(this.color)}, ${p2.alpha * 0.5})`
-        );
-        ctx.strokeStyle = grad;
-        ctx.lineWidth = this.size * 0.5;
+        // CẢI TIẾN: Giảm tốc độ mờ của vệt sáng (từ 0.5 lên 0.8)
+        const alphaFade = (i / this.trail.length) * 0.8;
+
+        ctx.strokeStyle = `rgba(${hexToRgb(this.color)}, ${
+          p1.alpha * alphaFade
+        })`;
+        ctx.lineWidth = this.size * 0.6;
+        ctx.lineCap = "round";
+
         ctx.beginPath();
         ctx.moveTo(p1.x, p1.y);
         ctx.lineTo(p2.x, p2.y);
@@ -93,47 +111,60 @@ class Particle {
       ctx.restore();
     }
 
+    // Draw particle with Radial Gradient (for soft edge) and Shadow (for glow)
     ctx.save();
+
+    // CẢI TIẾN: Tăng độ mờ (glow) mạnh hơn (từ *3 lên *4)
+    ctx.shadowBlur = this.size * 4;
+    ctx.shadowColor = this.color;
+
     ctx.globalAlpha = this.alpha > 0 ? this.alpha : 0;
+
     const grad = ctx.createRadialGradient(
       this.x,
       this.y,
       0,
       this.x,
       this.y,
-      this.size
+      this.size * 1.5
     );
-    grad.addColorStop(0, this.color);
+    grad.addColorStop(0, "white"); // Bright core
+    grad.addColorStop(0.5, this.color);
     grad.addColorStop(1, `rgba(${hexToRgb(this.color)}, 0)`);
+
     ctx.fillStyle = grad;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fill();
+
     ctx.restore();
   }
 }
 
+// --- Rocket Class ---
 class Rocket {
   constructor(x) {
     this.x = x;
     this.y = canvas.height;
     this.color = colors[Math.floor(Math.random() * colors.length)];
-    this.vx = (Math.random() - 0.5) * 1;
-    this.vy = -(Math.random() * 3 + 6);
-    this.size = 4;
+    this.vx = (Math.random() - 0.5) * 1.5;
+    this.vy = -(Math.random() * 4 + 6);
+    this.size = 5;
     this.exploded = false;
     this.trail = [];
+    this.isSpecial = Math.random() < 0.15;
   }
 
   update() {
-    this.trail.push({ x: this.x, y: this.y });
-    if (this.trail.length > 20) this.trail.shift();
+    this.trail.push({ x: this.x, y: this.y, alpha: 1 });
+    if (this.trail.length > 30) this.trail.shift();
+
     this.vx *= 0.99;
     this.vy += gravity * 0.5;
     this.x += this.vx;
     this.y += this.vy;
 
-    if (this.vy >= -1 && !this.exploded) {
+    if (this.vy >= -1.5 && !this.exploded) {
       this.explode();
       this.exploded = true;
     }
@@ -144,23 +175,23 @@ class Rocket {
     let count, speed, angleOffset;
     switch (pattern) {
       case 0: // Circle
-        count = 60;
-        speed = Math.random() * 3 + 3;
+        count = 70;
+        speed = Math.random() * 2.5 + 2.5;
         angleOffset = 0;
         break;
       case 1: // Star
-        count = 40;
-        speed = Math.random() * 4 + 4;
+        count = 50;
+        speed = Math.random() * 5 + 5;
         angleOffset = Math.PI / 5;
         break;
       case 2: // Burst
-        count = 80;
-        speed = Math.random() * 2 + 2;
+        count = 100;
+        speed = Math.random() * 1.5 + 1.5;
         angleOffset = 0;
         break;
       case 3: // Heart
         count = 50;
-        speed = Math.random() * 3 + 3;
+        speed = Math.random() * 2 + 2;
         angleOffset = 0;
         break;
     }
@@ -168,7 +199,6 @@ class Rocket {
     for (let i = 0; i < count; i++) {
       let angle, vx, vy;
       if (pattern === 3) {
-        // Heart
         angle = (Math.PI * 2 * i) / count;
         const t = angle;
         vx = 16 * Math.pow(Math.sin(t), 3);
@@ -186,25 +216,26 @@ class Rocket {
         vx = Math.cos(angle) * speed;
         vy = Math.sin(angle) * speed;
       }
-      const size = Math.random() * 3 + 1;
-      const life = 100 + Math.random() * 50;
-      particles.push(
-        new Particle(this.x, this.y, this.color, vx, vy, size, life)
-      );
+      const size = Math.random() * 2.5 + 1;
+      const life = 120 + Math.random() * 80;
+      const color = this.isSpecial
+        ? colors[Math.floor(Math.random() * colors.length)]
+        : this.color;
+      particles.push(new Particle(this.x, this.y, color, vx, vy, size, life));
     }
-    // Secondary explosion
+
     setTimeout(() => {
-      for (let i = 0; i < 20; i++) {
+      for (let i = 0; i < 25; i++) {
         const angle = Math.random() * Math.PI * 2;
         const speed2 = Math.random() * 2 + 1;
         const vx = Math.cos(angle) * speed2;
         const vy = Math.sin(angle) * speed2;
         const size = Math.random() * 2 + 0.5;
-        const life = 60;
+        const life = 70;
         particles.push(
           new Particle(
-            this.x + Math.random() * 20 - 10,
-            this.y + Math.random() * 20 - 10,
+            this.x + Math.random() * 15 - 7.5,
+            this.y + Math.random() * 15 - 7.5,
             colors[Math.floor(Math.random() * colors.length)],
             vx,
             vy,
@@ -214,61 +245,53 @@ class Rocket {
           )
         );
       }
-    }, 200);
+    }, 150);
 
     playSound();
   }
 
   draw() {
     if (!this.exploded) {
-      // Draw rocket trail
+      // Draw rocket trail with glow
       ctx.save();
-      ctx.strokeStyle = this.color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
+      // CẢI TIẾN: Tăng glow cho đuôi rocket
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = this.isSpecial ? "#ffffaa" : this.color;
+
       for (let i = 0; i < this.trail.length - 1; i++) {
-        ctx.moveTo(this.trail[i].x, this.trail[i].y);
-        ctx.lineTo(this.trail[i + 1].x, this.trail[i + 1].y);
+        const p1 = this.trail[i];
+        const p2 = this.trail[i + 1];
+
+        const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+        grad.addColorStop(0, `rgba(${hexToRgb(this.color)}, 0)`);
+        grad.addColorStop(1, this.isSpecial ? "#ffffaa" : this.color);
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = "round";
+
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
       }
-      ctx.stroke();
       ctx.restore();
 
-      // Draw rocket
-      ctx.fillStyle = this.color;
+      // Draw rocket head
+      ctx.save();
+      ctx.fillStyle = "white";
       ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.arc(this.x, this.y, this.size * 0.7, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
     }
   }
 }
 
-function hexToRgb(hex) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
-        result[3],
-        16
-      )}`
-    : null;
-}
-
-function playSound() {
-  const sounds = [
-    "https://www.soundjay.com/misc/sounds/firework-explosion-1.wav",
-    "https://www.soundjay.com/misc/sounds/firework-explosion-2.wav",
-    "https://www.soundjay.com/misc/sounds/firework-explosion-3.wav",
-  ];
-  const audio = new Audio(sounds[Math.floor(Math.random() * sounds.length)]);
-  audio.volume = 0.3;
-  audio.play().catch(() => {}); // Ignore errors
-}
-
-function launchRocket() {
-  const x = Math.random() * canvas.width;
-  rockets.push(new Rocket(x));
-}
-
+// --- Main Animation Loop with Background Fix ---
 function animate() {
+  // KHẮC PHỤC: Sử dụng ctx.clearRect để xóa canvas HOÀN TOÀN,
+  // Đảm bảo background DOM (sao và trăng) không bị che.
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   for (let i = rockets.length - 1; i >= 0; i--) {
@@ -289,27 +312,45 @@ function animate() {
     }
   }
 
-  // Limit particles for performance
-  if (particles.length > 1000) {
-    particles.splice(0, particles.length - 1000);
+  if (particles.length > 1200) {
+    particles.splice(0, particles.length - 1200);
   }
 
   requestAnimationFrame(animate);
 }
 
-canvas.addEventListener("click", () => {
-  launchRocket();
+// --- Sound and Launch Logic (Kept the same) ---
+function playSound() {
+  const sounds = [
+    "https://freesound.org/data/previews/316/316847_5123451-lq.mp3",
+    "https://freesound.org/data/previews/316/316848_5123451-lq.mp3",
+    "https://freesound.org/data/previews/316/316849_5123451-lq.mp3",
+  ];
+  const audio = new Audio(sounds[Math.floor(Math.random() * sounds.length)]);
+  audio.volume = 0.3;
+  audio.play().catch(() => {});
+}
+
+function launchRocket() {
+  const x = Math.random() * canvas.width;
+  rockets.push(new Rocket(x));
+}
+
+canvas.addEventListener("click", (e) => {
+  const x = e.clientX;
+  rockets.push(new Rocket(x));
 });
 
 setInterval(() => {
   launchRocket();
-}, 1500);
+}, 1200);
 
 animate();
 
-// Add stars
+// --- Star Field Logic (Kept the same) ---
 function makeStars(n = 80) {
   const starsDiv = document.getElementById("stars");
+  if (!starsDiv) return;
   for (let i = 0; i < n; i++) {
     const star = document.createElement("div");
     star.className = "star";
