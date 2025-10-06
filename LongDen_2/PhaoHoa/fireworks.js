@@ -159,4 +159,18 @@ function makeStars(n = 80) {
   }
 }
 
-makeStars(80);
+function detectMobile() {
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  const isMobileUA =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      userAgent
+    );
+  const isSmallScreen = window.innerWidth < 500;
+  return isMobileUA && isSmallScreen;
+}
+
+if (detectMobile()) {
+  makeStars(50);
+} else {
+  makeStars(80);
+}
