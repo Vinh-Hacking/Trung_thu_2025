@@ -8,6 +8,7 @@
   - Biến đổi màu sắc dựa trên flicker để tạo hiệu ứng ấm áp hơn.
   - Thêm hiệu ứng lấp lánh ngẫu nhiên cho chân thật.
 - [x] Kiểm tra hiệu ứng trên trình duyệt để đảm bảo chân thật, điều chỉnh để đều, giảm vùng sáng, tăng độ nét.
+- [x] Tăng vùng sáng của ánh sáng lồng đèn bay bằng cách tăng shadowBlur từ 20px lên 40px trong lantern_rain.js.
 
 ## Thông tin thu thập:
 

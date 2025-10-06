@@ -8,13 +8,13 @@ function detectMobile() {
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       userAgent
     );
-  const isSmallScreen = window.innerWidth < 2000;
+  const isSmallScreen = window.innerWidth < 500;
   console.log("UserAgent:", userAgent);
   console.log("isMobileUA:", isMobileUA);
   console.log("window.innerWidth:", window.innerWidth);
   console.log("isSmallScreen:", isSmallScreen);
   console.log("isMobileDevice:", isMobileUA && isSmallScreen);
-  return isMobileUA || isSmallScreen;
+  return isMobileUA && isSmallScreen;
 }
 
 let messages = [];
@@ -49,7 +49,7 @@ function setup() {
   if (isMobileDevice) {
     lanternCount = 10;
   } else {
-    lanternCount = 50;
+    lanternCount = 20;
   }
 
   const canvas = createCanvas(windowWidth, windowHeight);
@@ -113,9 +113,11 @@ class Lantern {
     push();
     translate(this.x, this.y);
 
-    // Simulate drop-shadow like hanging lanterns
+    // Simulate drop-shadow like hanging lanterns with flickering glow
     drawingContext.shadowColor = "orange";
-    drawingContext.shadowBlur = 20;
+    // Flicker effect for shadowBlur between 30 and 50
+    let flicker = map(sin(frameCount * 0.1 + this.xOffset), -1, 1, 30, 50);
+    drawingContext.shadowBlur = flicker;
     drawingContext.shadowOffsetX = 0;
     drawingContext.shadowOffsetY = 5;
 
