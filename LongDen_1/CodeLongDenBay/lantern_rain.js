@@ -89,6 +89,16 @@ function draw() {
   }
 }
 
+function mousePressed() {
+  for (let lantern of lanterns) {
+    let d = dist(mouseX, mouseY, lantern.x, lantern.y);
+    if (d < lantern.size / 2) {
+      showMessage(lantern.message);
+      break;
+    }
+  }
+}
+
 class Lantern {
   constructor() {
     this.x = random(width);
@@ -98,6 +108,10 @@ class Lantern {
     this.speed = random(0.2, 1.2);
     this.xOffset = random(1000);
     this.img = random(lanternImgs);
+    this.message =
+      messages.length > 0
+        ? messages[Math.floor(Math.random() * messages.length)]
+        : "Chúc mừng Trung Thu vui vẻ!";
   }
 
   update() {
@@ -163,19 +177,25 @@ async function loadMessages() {
     const response = await fetch("messages.json");
     const data = await response.json();
     messages = data.flatMap((category) => category.messages);
+    // Assign messages to lanterns that have default message
+    for (let lantern of lanterns) {
+      if (lantern.message === "Chúc mừng Trung Thu vui vẻ!") {
+        lantern.message = messages[Math.floor(Math.random() * messages.length)];
+      }
+    }
   } catch (error) {
     console.error("Error loading messages:", error);
     messages = ["Chúc mừng Trung Thu vui vẻ!"];
   }
 }
 
-function showMessage() {
-  if (!messages.length) return;
-  const message = messages[Math.floor(Math.random() * messages.length)];
+function showMessage(message) {
   document.getElementById("message-text").textContent = message;
   document.getElementById("message-popup").style.display = "block";
 }
 
-document.getElementById("close-popup").addEventListener("click", () => {
-  document.getElementById("message-popup").style.display = "none";
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("close-popup").addEventListener("click", () => {
+    document.getElementById("message-popup").style.display = "none";
+  });
 });
