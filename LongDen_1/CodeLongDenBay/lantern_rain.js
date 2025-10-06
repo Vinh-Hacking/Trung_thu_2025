@@ -93,7 +93,11 @@ function mousePressed() {
   for (let lantern of lanterns) {
     let d = dist(mouseX, mouseY, lantern.x, lantern.y);
     if (d < lantern.size / 2) {
-      showMessage(lantern.message);
+      let randomMessage =
+        messages.length > 0
+          ? messages[Math.floor(Math.random() * messages.length)]
+          : "Chúc mừng Trung Thu vui vẻ!";
+      showMessage(randomMessage);
       break;
     }
   }

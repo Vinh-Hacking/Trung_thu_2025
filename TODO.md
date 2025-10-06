@@ -1,5 +1,4 @@
-- [x] Thay đổi background-size từ 'cover' thành 'contain' trong LongDen_3/banhtrungthu.html để ảnh nền thu nhỏ theo tỷ lệ và hiển thị toàn bộ ảnh.
-- [x] Thay đổi background-size thành 'auto 100%' và background-position thành 'left center' trong LongDen_3/banhtrungthu.html để khi thu nhỏ cửa sổ, ảnh nền lấp đầy bằng cách cắt bên phải.
-- [x] Thay đổi background-size thành '100% 100%' để kéo dãn ảnh nền cho full cửa sổ khi cửa sổ lớn hơn ảnh.
-- [x] Thay đổi nội dung thông điệp cho mỗi bánh Trung Thu thành khác nhau.
-- [x] Cải tiến hiệu ứng xuất hiện thông điệp với slide up và fade in.
+# TODO for Lantern Click Random Message
+
+- [ ] Modify mousePressed function in lantern_rain.js to display a random message from messages.json on lantern click
+- [ ] Test the functionality by opening lantern_rain.html and clicking on lanterns
