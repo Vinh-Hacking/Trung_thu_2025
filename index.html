@@ -17,9 +17,12 @@
         <div class="string"></div>
         <img src="LongDen_2/AnhDenTreo/den2.png" alt="Đèn 2" />
       </div>
-      <div class="lantern">
+      <div class="lantern" id="lantern3" style="cursor: pointer">
         <div class="string"></div>
-        <img src="LongDen_3/AnhDenTreo/den3.png" alt="Đèn 3" />
+        <img
+          src="LongDen_3/AnhDenTreo/( Anhpng.com ) - ẢNH PNG TRUNG THU (186).png"
+          alt="Đèn 3"
+        />
       </div>
     </div>
 
@@ -39,6 +42,13 @@
         .getElementById("lantern2")
         .addEventListener("click", function () {
           window.location.href = "./LongDen_2/PhaoHoa/phaohoa.html";
+        });
+
+      // Thêm sự kiện click cho đèn 3 để chuyển trang
+      document
+        .getElementById("lantern3")
+        .addEventListener("click", function () {
+          window.location.href = "./LongDen_3/banhtrungthu.html";
         });
     </script>
   </body>
