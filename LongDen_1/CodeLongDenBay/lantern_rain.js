@@ -98,7 +98,6 @@ class Lantern {
     this.speed = random(0.2, 1.2);
     this.xOffset = random(1000);
     this.img = random(lanternImgs);
-    this.glowColor = color(255, 180, 100);
   }
 
   update() {
@@ -114,20 +113,13 @@ class Lantern {
     push();
     translate(this.x, this.y);
 
-    // Glow effect using ellipse for both desktop and mobile
-    let flicker = sin(frameCount * 0.05 + this.xOffset) * 0.5 + 0.5; // 0 to 1
-    let glowColorIntense = color(255, 230, 0, 150 + flicker * 100); // Alpha for glow
+    // Simulate drop-shadow like hanging lanterns
+    drawingContext.shadowColor = "orange";
+    drawingContext.shadowBlur = 20;
+    drawingContext.shadowOffsetX = 0;
+    drawingContext.shadowOffsetY = 5;
 
-    // Draw glow ellipse
-    drawingContext.globalCompositeOperation = "screen";
-    fill(glowColorIntense);
-    noStroke();
-    ellipse(0, 0, this.size * 2.5, this.size * 3.5);
-
-    // Reset blend mode
-    drawingContext.globalCompositeOperation = "source-over";
-
-    // Draw the lantern image
+    // Draw the lantern image with consistent tint for sharpness
     tint(255, this.alpha);
     image(
       this.img,
@@ -136,6 +128,11 @@ class Lantern {
       this.size,
       this.size * 1.5
     );
+
+    // Reset shadow
+    drawingContext.shadowBlur = 0;
+    drawingContext.shadowOffsetX = 0;
+    drawingContext.shadowOffsetY = 0;
 
     // Reset tint for other elements
     noTint();
